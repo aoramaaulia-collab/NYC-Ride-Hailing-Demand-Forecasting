@@ -1,0 +1,6 @@
+streamlit>=1.50
+pandas>=2.1
+pyarrow>=14
+altair>=5
+numpy
+duckdb>=1.0

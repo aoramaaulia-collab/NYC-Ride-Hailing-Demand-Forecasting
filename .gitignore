@@ -1,0 +1,21 @@
+# Data mentah TLC (unduh dari situs resmi NYC TLC)
+data/raw/
+
+# File besar hasil pipeline dan modelling (dibuat ulang oleh notebook)
+output/model/fitur*.parquet
+output/final/business_pickup_2024_2026.parquet
+output/model/tmp/
+*.duckdb
+*.duckdb.wal
+
+# Kunci dan rahasia (saat ini tidak ada, dijaga untuk ke depan)
+.env
+*.pem
+*.key
+*service_account*.json
+*credentials*.json
+
+# File sementara
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store

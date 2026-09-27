@@ -1,0 +1,7 @@
+,Bias ≤ ±3%,RMSE < pembanding,Jam sibuk < pembanding,Layak
+Regresi linear,True,True,True,True
+LightGBM satu model,True,True,True,True
+XGBoost satu model,True,True,True,True
+LightGBM satu model + tren,True,True,True,True
+LightGBM per kelompok seri,True,True,True,True
+LightGBM per provider,True,True,True,True
