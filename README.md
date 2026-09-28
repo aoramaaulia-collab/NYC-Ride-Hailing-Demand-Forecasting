@@ -1,10 +1,10 @@
 # Perkiraan Permintaan Ride-Hailing di New York City
 
-[![Buka aplikasi](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://nyc-ride-hailing.streamlit.app)
+[![Buka dashboard dan aplikasi perkiraan](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://nyc-ride-hailing.streamlit.app)
 
-Project ini menganalisis **589 juta perjalanan Uber dan Lyft** di New York City selama Januari 2024 – Mei 2026, lalu membangun model yang **memperkirakan berapa banyak perjalanan akan terjadi di setiap zona, setiap jam, hingga 4 pekan ke depan**. Hasilnya disajikan dalam aplikasi web yang bisa dicoba siapa saja tanpa memasang apa pun.
+Project ini menganalisis **589 juta perjalanan Uber dan Lyft** di New York City selama Januari 2024 – Mei 2026, lalu membangun model yang **memperkirakan berapa banyak perjalanan akan terjadi di setiap zona, setiap jam, hingga 4 pekan ke depan**. Hasilnya disajikan dalam **dashboard analisis** dan **aplikasi perkiraan** berbasis web yang bisa dicoba siapa saja tanpa memasang apa pun.
 
-**Coba aplikasinya:** https://nyc-ride-hailing.streamlit.app
+**Buka dashboard dan aplikasi perkiraan:** https://nyc-ride-hailing.streamlit.app
 
 ---
 
@@ -13,13 +13,14 @@ Project ini menganalisis **589 juta perjalanan Uber dan Lyft** di New York City 
 1. [Ringkasan dalam satu menit](#ringkasan-dalam-satu-menit)
 2. [Konteks bisnis](#konteks-bisnis)
 3. [Alur pengerjaan](#alur-pengerjaan)
-4. [Temuan utama analisis bisnis](#temuan-utama-analisis-bisnis)
-5. [Temuan utama modelling](#temuan-utama-modelling)
-6. [Rekomendasi](#rekomendasi)
-7. [Aplikasi](#aplikasi)
-8. [Cara menjalankan sendiri](#cara-menjalankan-sendiri)
-9. [Keterbatasan dan pengembangan berikutnya](#keterbatasan-dan-pengembangan-berikutnya)
-10. [Kamus istilah](#kamus-istilah)
+4. [Tools yang digunakan](#tools-yang-digunakan)
+5. [Temuan utama analisis bisnis](#temuan-utama-analisis-bisnis)
+6. [Temuan utama modelling](#temuan-utama-modelling)
+7. [Rekomendasi](#rekomendasi)
+8. [Dashboard dan aplikasi perkiraan](#dashboard-dan-aplikasi-perkiraan)
+9. [Cara menjalankan sendiri](#cara-menjalankan-sendiri)
+10. [Keterbatasan dan pengembangan berikutnya](#keterbatasan-dan-pengembangan-berikutnya)
+11. [Kamus istilah](#kamus-istilah)
 
 ---
 
@@ -117,19 +118,34 @@ Ukuran keberhasilannya bukan angka ketepatan mutlak, melainkan **apakah model le
 ## Alur pengerjaan
 
 ```mermaid
-flowchart TD
-    A["1 · Memahami data<br/>satu bulan contoh"] --> B["2 · Mengolah data<br/>29 file, 14 GB, DuckDB"]
-    B --> C["3 · Menyusun gudang data<br/>Google BigQuery"]
-    C --> D["4 · Analisis bisnis<br/>KPI dan uji dugaan"]
-    D --> G1{"Gerbang 1<br/>Apakah rata-rata gagal?"}
-    G1 -- "Tidak" --> X1["Pakai rata-rata<br/>project selesai"]
-    G1 -- "Ya, meleset 28 dari 100" --> G2{"Gerbang 2<br/>Apakah perbedaannya berpola?"}
-    G2 -- "Tidak" --> X2["Siapkan armada cadangan<br/>tanpa model"]
-    G2 -- "Ya, kesalahan turun separuh" --> E["5 · Modelling<br/>6 kandidat, LightGBM terpilih"]
-    E --> F["6 · Aplikasi Streamlit<br/>dashboard dan perkiraan"]
+flowchart TB
+    subgraph R1["Tahap 1 · Persiapan dan analisis"]
+        direction LR
+        A["<b>1 · Memahami data</b><br/>satu bulan contoh"] --> B["<b>2 · Mengolah data</b><br/>29 file, 14 GB<br/>dengan DuckDB"]
+        B --> C["<b>3 · Menyusun gudang data</b><br/>Google BigQuery"]
+        C --> D["<b>4 · Analisis bisnis</b><br/>KPI dan uji dugaan"]
+    end
+    subgraph R2["Tahap 2 · Keputusan dan pembangunan model"]
+        direction LR
+        G1{"<b>Gerbang 1</b><br/>Apakah rata-rata<br/>gagal?"} -- "Ya, meleset<br/>28 dari 100" --> G2{"<b>Gerbang 2</b><br/>Apakah perbedaannya<br/>berpola?"}
+        G2 -- "Ya, kesalahan<br/>turun separuh" --> E["<b>5 · Modelling</b><br/>6 kandidat,<br/>LightGBM terpilih"]
+        E --> F["<b>6 · Dashboard dan<br/>aplikasi perkiraan</b><br/>Streamlit"]
+        G1 -. "Tidak" .-> X1["Pakai rata-rata,<br/>project selesai"]
+        G2 -. "Tidak" .-> X2["Siapkan armada<br/>cadangan tanpa model"]
+    end
+    R1 --> R2
+
+    classDef langkah fill:#E6F2F0,stroke:#1F5F6B,color:#123B45
+    classDef gerbang fill:#FFF4DE,stroke:#C9892B,color:#5A3E0A
+    classDef berhenti fill:#F3F3F3,stroke:#9AA5B1,color:#55615F
+    class A,B,C,D,E,F langkah
+    class G1,G2 gerbang
+    class X1,X2 berhenti
+    style R1 fill:#FFFFFF,stroke:#C9D9D6
+    style R2 fill:#FFFFFF,stroke:#C9D9D6
 ```
 
-Dua **gerbang** di tengah alur itu adalah bagian terpenting. Membangun model butuh usaha, sedangkan rata-rata bisa dipakai gratis. Jadi model hanya layak dibangun bila dua hal terbukti lebih dulu: rata-rata memang gagal, **dan** perbedaannya punya pola yang bisa dipelajari. Kalau salah satu gagal, project berhenti di situ. Keduanya diuji dengan analisis biasa, bukan dengan membangun model, karena menguji perlunya model dengan membangun model adalah penalaran melingkar.
+Pengerjaan dibagi dua tahap. **Tahap 1** menyiapkan data dan menganalisisnya. **Tahap 2** memutuskan apakah model perlu dibangun, lalu membangunnya. Kotak hijau adalah langkah pengerjaan, kotak kuning adalah **gerbang**, dan kotak abu-abu adalah tempat project akan berhenti bila gerbangnya tidak lolos. Kedua gerbang itu adalah bagian terpenting. Membangun model butuh usaha, sedangkan rata-rata bisa dipakai gratis. Jadi model hanya layak dibangun bila dua hal terbukti lebih dulu: rata-rata memang gagal, **dan** perbedaannya punya pola yang bisa dipelajari. Kalau salah satu gagal, project berhenti di situ. Keduanya diuji dengan analisis biasa, bukan dengan membangun model, karena menguji perlunya model dengan membangun model adalah penalaran melingkar.
 
 | Langkah | Notebook | Yang dikerjakan | Hasil |
 |---|---|---|---|
@@ -138,13 +154,28 @@ Dua **gerbang** di tengah alur itu adalah bagian terpenting. Membangun model but
 | 3 | [`03_bigquery_transformation.ipynb`](03_bigquery_transformation.ipynb) | Menyusun tabel analisis di Google BigQuery | Tabel siap pakai untuk permintaan, bisnis, dan tujuan perjalanan |
 | 4 | [`04_business_analytics.ipynb`](04_business_analytics.ipynb) | Menetapkan KPI, menguji 7 dugaan bisnis, dan menguji dua gerbang | Temuan, rekomendasi bisnis, dan pembanding untuk model |
 | 5 | [`05_modelling.ipynb`](05_modelling.ipynb) | Membandingkan 6 kandidat model, menguji model terpilih, menyusun batas bawah dan atas | Model LightGBM dan perkiraan 1–28 Juni 2026 |
-| 6 | [`app/app.py`](app/app.py) | Menyajikan temuan dan perkiraan dalam aplikasi web | [nyc-ride-hailing.streamlit.app](https://nyc-ride-hailing.streamlit.app) |
+| 6 | [`app/app.py`](app/app.py) | Menyajikan temuan dalam dashboard dan perkiraan dalam aplikasi perkiraan | [nyc-ride-hailing.streamlit.app](https://nyc-ride-hailing.streamlit.app) |
 
 Laporan lengkapnya ada di [`Laporan_Project_Ride_Hailing_Revisi.md`](Laporan_Project_Ride_Hailing_Revisi.md).
 
-**Alat yang dipakai:** Python, DuckDB, Google BigQuery, pandas, LightGBM, Streamlit, dan Altair.
 
 ---
+
+## Tools yang digunakan
+
+| Kategori | Tools | Dipakai untuk |
+|---|---|---|
+| **Bahasa dan lingkungan kerja** | Python, Jupyter Notebook, VS Code, Anaconda | Menulis seluruh analisis dan kode dalam lima notebook |
+| **Pengolahan data besar** | DuckDB | Mengolah 29 file bulanan (14 GB, 589 juta perjalanan) langsung di laptop, tanpa server |
+| **Format data** | Apache Parquet, PyArrow | Menyimpan data dalam format ringkas dan cepat dibaca |
+| **Gudang data** | Google BigQuery (Sandbox) | Menyusun tabel analisis siap pakai dengan SQL |
+| **Analisis data** | pandas, NumPy | Mengolah, menggabungkan, dan menghitung data di notebook |
+| **Visualisasi di notebook** | Matplotlib | Grafik analisis bisnis dan hasil model |
+| **Model perkiraan** | LightGBM | Model terpilih untuk memperkirakan permintaan per zona per jam |
+| **Model pembanding** | XGBoost, regresi linear | Kandidat lain yang dibandingkan sebelum LightGBM dipilih |
+| **Dashboard dan aplikasi perkiraan** | Streamlit, Altair | Membangun dashboard analisis bisnis dan aplikasi perkiraan yang interaktif |
+| **Hosting** | Streamlit Community Cloud | Menjalankan dashboard dan aplikasi perkiraan secara online dan gratis |
+| **Versi kode dan dokumentasi** | Git, GitHub | Menyimpan kode, riwayat perubahan, dan dokumentasi project |
 
 ## Temuan utama analisis bisnis
 
@@ -292,12 +323,20 @@ Januari–Februari 2026 berisi hari-hari dengan penurunan ekstrem yang tidak bis
 
 ---
 
-## Aplikasi
+## Dashboard dan aplikasi perkiraan
 
-Aplikasi di [nyc-ride-hailing.streamlit.app](https://nyc-ride-hailing.streamlit.app) punya enam halaman, masing-masing dengan panduan cara menggunakan:
+Keduanya dibangun dengan Streamlit dan bisa dibuka di satu alamat: [nyc-ride-hailing.streamlit.app](https://nyc-ride-hailing.streamlit.app). Setiap halaman dilengkapi panduan cara menggunakan.
 
-| Halaman | Isi |
-|---|---|
+| Bagian | Halaman | Isi |
+|---|---|---|
+| **Dashboard** | Dashboard | Angka utama, tren per bulan, jam dan hari paling ramai, zona teramai, perubahan tarif dan pendapatan pengemudi. Bisa disaring per periode, provider, dan wilayah |
+| **Aplikasi perkiraan** | Perkiraan kota | Perkiraan seluruh kota untuk 4 pekan ke depan, per pekan dan per hari |
+| | Perkiraan per zona | Pilih zona, provider, dan tanggal untuk melihat perkiraan setiap jam. Hasilnya bisa diunduh ke Excel |
+| | Peringkat zona | Zona mana yang paling ramai pada tanggal dan jam tertentu, misalnya Sabtu malam |
+| | Keandalan model | Seberapa sering model tepat, dibanding cara tanpa model, lengkap dengan penjelasan |
+| **Keterangan** | Tentang | Data, cara kerja, keputusan, rekomendasi, dan istilah |
+
+---|---|
 | **Dashboard** | Angka utama, tren per bulan, jam dan hari paling ramai, zona teramai, perubahan tarif dan pendapatan pengemudi. Bisa disaring per periode, provider, dan wilayah |
 | **Perkiraan kota** | Perkiraan seluruh kota untuk 4 pekan ke depan, per pekan dan per hari |
 | **Perkiraan per zona** | Pilih zona, provider, dan tanggal untuk melihat perkiraan setiap jam. Hasilnya bisa diunduh ke Excel |
@@ -313,9 +352,9 @@ Aplikasi di [nyc-ride-hailing.streamlit.app](https://nyc-ride-hailing.streamlit.
 
 **NYC TLC High Volume For-Hire Vehicle Trip Records**, data resmi dan terbuka dari Komisi Taksi dan Limusin New York: Januari 2024 – Mei 2026, 589.055.372 perjalanan Uber dan Lyft di 263 zona penjemputan. Data mentahnya sekitar 14 GB sehingga **tidak disimpan di repository ini**; unduh dari [nyc.gov/site/tlc/about/tlc-trip-record-data.page](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page).
 
-### Hanya aplikasinya (paling mudah)
+### Hanya dashboard dan aplikasi perkiraannya (paling mudah)
 
-Semua data yang dibutuhkan aplikasi sudah ada di folder `app/data`.
+Semua data yang dibutuhkan dashboard dan aplikasi perkiraan sudah ada di folder `app/data`.
 
 ```bash
 git clone https://github.com/aoramaaulia-collab/NYC-Ride-Hailing-Demand-Forecasting.git
@@ -330,7 +369,7 @@ Jalankan perintah terakhir dari folder utama project agar tema tampilannya terba
 
 1. Unduh 29 file High Volume For-Hire Vehicle Trip Records (Januari 2024 – Mei 2026) dan simpan di folder `data/raw/`
 2. Jalankan notebook 01 sampai 05 secara berurutan. Paket yang dibutuhkan setiap notebook tercantum di sel awalnya. Notebook 03 membutuhkan akun Google Cloud dengan BigQuery
-3. Siapkan ulang data aplikasi dengan `python app/siapkan_data_app.py .`
+3. Siapkan ulang data dashboard dan aplikasi perkiraan dengan `python app/siapkan_data_app.py .`
 
 Beberapa file besar hasil perantara, seperti fitur model (sekitar 200 MB per file), tidak disimpan di repository ini dan akan dibuat ulang oleh notebook.
 
@@ -341,11 +380,11 @@ NYC-Ride-Hailing-Demand-Forecasting/
 ├── 01_ ... 05_*.ipynb        Lima notebook, dari memahami data sampai modelling
 ├── Laporan_Project_...md     Laporan lengkap project
 ├── app/
-│   ├── app.py                Aplikasi Streamlit
-│   ├── siapkan_data_app.py   Menyiapkan data ringkas untuk aplikasi
-│   ├── requirements.txt      Paket yang dibutuhkan aplikasi
-│   └── data/                 Data ringkas untuk aplikasi
-├── .streamlit/config.toml    Tema tampilan aplikasi
+│   ├── app.py                Dashboard dan aplikasi perkiraan (Streamlit)
+│   ├── siapkan_data_app.py   Menyiapkan data ringkas untuk dashboard dan aplikasi perkiraan
+│   ├── requirements.txt      Paket Python yang dibutuhkan
+│   └── data/                 Data ringkas untuk dashboard dan aplikasi perkiraan
+├── .streamlit/config.toml    Tema tampilan
 ├── data/staging/             Ringkasan per bulan hasil langkah 2
 └── output/
     ├── final/                Data gabungan 2024–2026 untuk analisis
