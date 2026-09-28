@@ -335,13 +335,6 @@ Keduanya dibangun dengan Streamlit dan bisa dibuka di satu alamat: [nyc-ride-hai
 | | Peringkat zona | Zona mana yang paling ramai pada tanggal dan jam tertentu, misalnya Sabtu malam |
 | | Keandalan model | Seberapa sering model tepat, dibanding cara tanpa model, lengkap dengan penjelasan |
 | **Keterangan** | Tentang | Data, cara kerja, keputusan, rekomendasi, dan istilah |
-|---|---|---|
-| **Dashboard** | Angka utama, tren per bulan, jam dan hari paling ramai, zona teramai, perubahan tarif dan pendapatan pengemudi. Bisa disaring per periode, provider, dan wilayah |
-| **Perkiraan kota** | Perkiraan seluruh kota untuk 4 pekan ke depan, per pekan dan per hari |
-| **Perkiraan per zona** | Pilih zona, provider, dan tanggal untuk melihat perkiraan setiap jam. Hasilnya bisa diunduh ke Excel |
-| **Peringkat zona** | Zona mana yang paling ramai pada tanggal dan jam tertentu, misalnya Sabtu malam |
-| **Keandalan model** | Seberapa sering model tepat, dibanding cara tanpa model, lengkap dengan penjelasan |
-| **Tentang** | Data, cara kerja, keputusan, rekomendasi, dan istilah |
 
 ---
 
