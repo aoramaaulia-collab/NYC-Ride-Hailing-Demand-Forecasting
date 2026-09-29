@@ -256,10 +256,10 @@ Model diuji pada **Januari–Mei 2026**, data yang sama sekali tidak dilihat saa
 
 - **Kesalahan model 14% lebih sedikit** daripada cara terbaik tanpa model, dan **25% lebih sedikit** daripada meniru pekan lalu. Tujuan modelling tercapai
 - **Unggul di jam sibuk** (17:00–22:00): meleset 15,8 dibanding 18,0 per 100
-- **Unggul di setiap kelompok zona**, dari yang paling ramai (14,8 dibanding 17,4) sampai yang paling sepi (20,2 dibanding 22,3)
+- **Unggul di setiap kelompok zona**, dari yang paling ramai (14,8 dibanding 17,4) sampai yang paling sepi (20,3 dibanding 22,3)
 - **Konsisten dari pekan ke pekan**: tidak pernah kalah di zona ramai dan menengah, dan hanya kalah 2 dari 22 pekan di zona sepi
 - **Pola mingguan tertangkap sepenuhnya**: setelah dikurangi perkiraan model, sisa kesalahan tidak lagi berulang tiap pekan
-- **Cenderung sedikit terlalu rendah**, sekitar 1,4% di bawah kenyataan secara keseluruhan, kemungkinan karena permintaan sedang tumbuh
+- **Cenderung sedikit terlalu rendah**, sekitar 1,6% di bawah kenyataan secara keseluruhan, kemungkinan karena permintaan sedang tumbuh
 
 > **Kenapa tidak 100% tepat?** Yang diperkirakan sangat rinci: satu zona, satu provider, satu jam. Di tingkat serinci itu banyak jam yang hanya berisi belasan perjalanan, sehingga selisih 2–3 perjalanan saja sudah tercatat sebagai meleset cukup besar. Yang terpenting adalah model **lebih baik daripada cara yang bisa dipakai tanpa model**.
 
